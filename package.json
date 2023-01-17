@@ -1,11 +1,15 @@
 {
-  "name": "@rogue_psycho/brgaming-backend",
+    "name": "@rogue_psycho/brgaming-backend",
   "version": "1.0.0",
   "description": "Development test for the backend role.",
   "main": "src/server.ts",
   "scripts": {
     "test": "echo \"Error: no test\" && exit 1",
-    "dev": "nodemon src/server.ts"
+    "dev": "nodemon src/server.ts",
+    "deploy:check": "tsc --project tsconfig.json",
+    "deploy:tsc": "tsc",
+    "deploy:commit": "git add dist",
+    "deploy": "npm run deploy:check && npm run deploy:tsc && npm run deploy:commit"
   },
   "keywords": [],
   "author": "Neto Jocelino <netoj96@live.com>",
