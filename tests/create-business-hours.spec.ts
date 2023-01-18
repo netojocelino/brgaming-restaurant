@@ -2,6 +2,7 @@ import { expect, test } from "vitest";
 
 type ShortWeekDayName = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
 type LongWeekDayName = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
+type WorkHour = [string, string]
 
 class WeekDayNames {
     private props: Record<ShortWeekDayName, LongWeekDayName> = {
@@ -25,8 +26,7 @@ class WeekDayNames {
 
 interface BusinessHourProps {
     name: string // ShortWeekDayName
-    startTime: string
-    endTime: string
+    worksAt: WorkHour[]
 }
 
 class BusinessHour {
@@ -35,8 +35,7 @@ class BusinessHour {
 
     constructor (input: {
         dayOfWeek: string,
-        startTime: string,
-        endTime: string,
+        worksAt: WorkHour[],
     }) {
 
         if (!this.weekdayManager.isValidShortName(input.dayOfWeek)) {
@@ -50,36 +49,27 @@ class BusinessHour {
         return this.props.name
     }
 
-    get startAt () {
-        return this.props.startTime
-    }
-
-    get endsAt () {
-        return this.props.endTime
-    }
 }
 
 
 test('Should create one business hour successfully', async () => {
+    const workAt: WorkHour = ['10:00', '18:00']
     const businessHour = {
         dayOfWeek: 'mon',
-        startTime: '10:00',
-        endTime: '18:00',
+        worksAt: [workAt],
     }
 
     const sut = new BusinessHour(businessHour)
 
     expect(sut).toBeInstanceOf(BusinessHour)
     expect(sut.name).toEqual('monday')
-    expect(sut.startAt).toEqual('10:00')
-    expect(sut.endsAt).toEqual('18:00')
 })
 
 test('Should fails when dayOfWeek is an invalid format', async () => {
+    const workAt: WorkHour = ['10:00', '18:00']
     const businessHour = {
         dayOfWeek: 'seg',
-        startTime: '10:00',
-        endTime: '18:00',
+        worksAt: [workAt],
     }
 
     expect(() => new BusinessHour(businessHour))
