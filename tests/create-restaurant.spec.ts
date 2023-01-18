@@ -1,10 +1,15 @@
 import { expect, test } from "vitest"
 
 // Entity
+type RestaurantTypes = 'SnackBar' | 'IceCreamParlor'
+
+const restaurantTypes = ['SnackBar', 'IceCreamParlor']
+const isRestaurantType = (input: string): input is RestaurantTypes => restaurantTypes.includes(input)
+
 interface RestaurantProps {
     name: string,
     document_id: string,
-    type: string
+    type: RestaurantTypes
     // etc...
 }
 
@@ -24,7 +29,15 @@ class Restaurant {
             throw new Error('`name` size must be less or equal to 255.')
         }
 
-        this.props = input
+        if (!isRestaurantType(input.type)) {
+            throw new Error(`\`type\` must be one of then: ${restaurantTypes.join(', ')}`)
+        }
+
+        this.props = {
+            name: input.name,
+            type: input.type,
+            document_id: input.document_id,
+        }
     }
 
     get name () {
@@ -83,4 +96,18 @@ test('Must fails at create a new restaurant when name size is greather than 255'
     }
 
     expect(() => new Restaurant(restaurant)).toThrowError('`name` size must be less or equal to 255.')
+})
+
+test('Must fails at create a new restaurant when type is invalid', () => {
+    const restaurant = {
+        name: 'Papa\'s Jocelino Restaurant',
+        // @TODO: Ask about it, format and validations
+        document_id: '1234778-88',
+        // @TODO: Ask about it, format and validations
+        type: 'Snack Bar', // 'IceCreamParlor'
+        // etc...
+    }
+
+    expect(() => new Restaurant(restaurant))
+        .toThrowError('`type` must be one of then: SnackBar, IceCreamParlor')
 })
