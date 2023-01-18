@@ -16,6 +16,9 @@ class Restaurant {
         document_id: string,
         type: string,
     }) {
+        if (input.name.length === 0) {
+            throw new Error('`name` cannot be empty.')
+        }
         this.props = input
     }
 
@@ -48,4 +51,17 @@ test('Should create a new restaurant successfully', () => {
     expect(restaurant.name).toEqual(sut.name)
     expect(restaurant.document_id).toEqual(sut.documentId)
     expect(restaurant.type).toEqual(sut.type)
+})
+
+test('Must fails at create a new restaurant when name is empty', () => {
+    const restaurant = {
+        name: '',
+        // @TODO: Ask about it, format and validations
+        document_id: '1234778-88',
+        // @TODO: Ask about it, format and validations
+        type: 'SnackBar', // 'IceCreamParlor'
+        // etc...
+    }
+
+    expect(() => new Restaurant(restaurant)).toThrowError()
 })
