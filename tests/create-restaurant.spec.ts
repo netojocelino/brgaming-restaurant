@@ -19,6 +19,11 @@ class Restaurant {
         if (input.name.length === 0) {
             throw new Error('`name` cannot be empty.')
         }
+
+        if (input.name.length > 255) {
+            throw new Error('`name` size must be less or equal to 255.')
+        }
+
         this.props = input
     }
 
@@ -64,4 +69,18 @@ test('Must fails at create a new restaurant when name is empty', () => {
     }
 
     expect(() => new Restaurant(restaurant)).toThrowError()
+})
+
+test('Must fails at create a new restaurant when name size is greather than 255', () => {
+    const name = (new Array(256).fill('a', 0, 256)).join('')
+    const restaurant = {
+        name,
+        // @TODO: Ask about it, format and validations
+        document_id: '1234778-88',
+        // @TODO: Ask about it, format and validations
+        type: 'SnackBar', // 'IceCreamParlor'
+        // etc...
+    }
+
+    expect(() => new Restaurant(restaurant)).toThrowError('`name` size must be less or equal to 255.')
 })
