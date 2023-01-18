@@ -20,9 +20,9 @@ class RestaurantRepository implements IRestaurantRepository<Restaurant> {
     }
 }
 
-const repository = new RestaurantRepository()
-
 test('Should list empty array when not exists restaurant saved', async () => {
+    const repository = new RestaurantRepository()
+
     const sut = await repository.listAll()
 
     expect(sut.length).toBe(0)
