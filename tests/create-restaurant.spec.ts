@@ -29,6 +29,10 @@ class Restaurant {
             throw new Error('`name` size must be less or equal to 255.')
         }
 
+        if (input.document_id.length === 0) {
+            throw new Error('`document_id` cannot be empty.')
+        }
+
         if (!isRestaurantType(input.type)) {
             throw new Error(`\`type\` must be one of then: ${restaurantTypes.join(', ')}`)
         }
@@ -96,6 +100,19 @@ test('Must fails at create a new restaurant when name size is greather than 255'
     }
 
     expect(() => new Restaurant(restaurant)).toThrowError('`name` size must be less or equal to 255.')
+})
+
+test('Must fails at create a new restaurant when document_id is empty', () => {
+    const restaurant = {
+        name: 'Papa\'s Jocelino Restaurant',
+        // @TODO: Ask about it, format and validations
+        document_id: '',
+        // @TODO: Ask about it, format and validations
+        type: 'SnackBar', // 'IceCreamParlor'
+        // etc...
+    }
+
+    expect(() => new Restaurant(restaurant)).toThrowError()
 })
 
 test('Must fails at create a new restaurant when type is invalid', () => {
