@@ -42,6 +42,20 @@ class BusinessHour {
             throw new Error('`dayOfWeek` have a invalid format.')
         }
 
+        input.worksAt.forEach((workAt: WorkHour) => {
+            const [startHr, startMin] = (workAt[0]).split(':')
+            const [endHr, endMin] = (workAt[1]).split(':')
+
+            const startsAt = new Date()
+            const endsAt = new Date()
+            startsAt.setHours(+startHr, +startMin)
+            endsAt.setHours(+endHr, +endMin)
+
+            if(startsAt > endsAt) {
+                throw new Error('`worksAt` must be formated as [[`startAtHour`, `endAtHour`]], with moment startAt past than endAtHour.')
+            }
+        });
+
         this.props = {...input, name: this.weekdayManager.getByShortName(input.dayOfWeek) }
     }
 
@@ -74,4 +88,16 @@ test('Should fails when dayOfWeek is an invalid format', async () => {
 
     expect(() => new BusinessHour(businessHour))
         .toThrowError('`dayOfWeek` have a invalid format.')
+})
+
+test('Should fails when hours was overlapping', async () => {
+    const workAt: WorkHour = ['12:00', '11:00']
+    const businessHour = {
+        dayOfWeek: 'mon',
+        worksAt: [workAt],
+    }
+
+    expect(() => new BusinessHour(businessHour))
+        .toThrowError('`worksAt` must be formated as [[`startAtHour`, `endAtHour`]], with moment startAt past than endAtHour.')
+
 })
