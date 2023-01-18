@@ -37,3 +37,14 @@ test('Should fails when hours was overlapping', async () => {
         .toThrowError('`worksAt` must be formated as [[`startAtHour`, `endAtHour`]], with moment startAt past than endAtHour.')
 
 })
+
+test('Should fails when hours start and ends same moment', async () => {
+    const workAt: WorkHour = ['12:00', '12:00']
+    const businessHour = {
+        dayOfWeek: 'mon',
+        worksAt: [workAt],
+    }
+
+    expect(() => new BusinessHour(businessHour))
+        .toThrowError('`worksAt` must be formated as [[`startAtHour`, `endAtHour`]], with moment startAt past than endAtHour.')
+})

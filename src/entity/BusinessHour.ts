@@ -49,7 +49,7 @@ export default class BusinessHour {
             startsAt.setHours(+startHr, +startMin)
             endsAt.setHours(+endHr, +endMin)
 
-            if(startsAt > endsAt) {
+            if(startsAt >= endsAt) {
                 throw new Error('`worksAt` must be formated as [[`startAtHour`, `endAtHour`]], with moment startAt past than endAtHour.')
             }
         });
