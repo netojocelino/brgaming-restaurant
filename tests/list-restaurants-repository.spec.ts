@@ -1,24 +1,7 @@
 import { expect, test } from "vitest";
 
 import Restaurant from "../src/entity/Restaurant";
-
-interface IRestaurantRepository<T> {
-    save(item: T): Promise<T>
-    listAll(): Promise<T[]>
-}
-
-
-class RestaurantRepository implements IRestaurantRepository<Restaurant> {
-    items: Restaurant[] = []
-
-    async save (item: Restaurant) : Promise<Restaurant> {
-        throw new Error('Not implemented yet')
-    }
-
-    async listAll(): Promise<Restaurant[]> {
-        return this.items
-    }
-}
+import RestaurantRepository from "../src/repository/restaurant/InMemoryRestaurantRepository";
 
 test('Should list empty array when not exists restaurant saved', async () => {
     const repository = new RestaurantRepository()
