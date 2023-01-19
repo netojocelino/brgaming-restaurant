@@ -1,0 +1,315 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "BRGaming Restaurant API",
+        "description": "Implements a basic API check for verify whenever is opened.",
+        "termsOfService": "",
+        "contact": {
+            "name": "Jocelino Neto",
+            "url": "https://github.com/netojocelino/brgaming-restaurant/wiki/Terms-Of-Service"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:7521/v1",
+            "description": "Localhost API"
+        }
+    ],
+    "paths": {
+        "/restaurant": {
+            "post": {
+                "summary": "Create a new Restaurant",
+                "description": "This route will create a new restaurant with basic informations",
+                "tags": [
+                    "restaurant"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RestaurantPayload"
+                            },
+                            "examples": {
+                                "restaurant": {
+                                    "value": {
+                                        "name": "Papa's Snacks",
+                                        "document_id": "13458-87",
+                                        "type": "snackBar"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RestaurantResponse"
+                                },
+                                "examples": {
+                                    "restaurant": {
+                                        "value": {
+                                            "id": "123e4567-e89b-12d3-a456-426614174000",
+                                            "name": "Papa's Snacks",
+                                            "document_id": "13458-87",
+                                            "type": "snackBar",
+                                            "created_at": "2023-01-19 11:23:00"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, invalid information.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "restaurant": {
+                                        "value": {
+                                            "error": [
+                                                "NAME_REQUIRED",
+                                                "DOCUMENT_ID_REQUIRED",
+                                                "TYPE_REQUIRED"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/restaurant/{restaurant_id}/isOpen": {
+            "get": {
+                "summary": "Indicates if the restaurant is opened in the moment requested",
+                "description": "This route will indicate if the restaurant is opened",
+                "tags": [
+                    "restaurant"
+                ],
+                "parameters": [
+                    {
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "description": "Restaurant ID",
+                        "required": true
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Date for request if the restaurant is opened. Formated as: 'Year-Month-Day'",
+                        "required": true
+                    },
+                    {
+                        "name": "time",
+                        "in": "query",
+                        "description": "Time for request if the restaurant is opened. Formated as: 'hour:minute'",
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/businesshour/{restaurant_id}": {
+            "post": {
+                "summary": "Create a new Business Hours for a restaurant",
+                "description": "This route will create or update a restaurant business hour",
+                "tags": [
+                    "business-hour"
+                ],
+                "parameters": [
+                    {
+                        "name": "restaurant_id",
+                        "in": "path",
+                        "description": "Restaurant ID",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BusinessHourPayload"
+                            },
+                            "examples": {
+                                "businessHour": {
+                                    "value": {
+                                        "restaurant_id": "123e4567-e89b-12d3-a456-426614174000",
+                                        "weekDay": "mon",
+                                        "startTime": "10:00",
+                                        "endTime": "15:30"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BusinessHourResponse"
+                                },
+                                "examples": {
+                                    "restaurant": {
+                                        "value": {
+                                            "restaurant_id": "123e4567-e89b-12d3-a456-426614174000",
+                                            "weekDay": "mon",
+                                            "businessHours": [
+                                                {
+                                                    "startTime": "10:00",
+                                                    "endTime": "15:30"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request, invalid information.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "restaurant": {
+                                        "value": {
+                                            "error": [
+                                                "RESTAURANT_NOT_FOUND",
+                                                "INVALID_TIME"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "RestaurantPayload": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "document_id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "iceCreamParlor",
+                            "restaurant",
+                            "snackBar"
+                        ]
+                    }
+                }
+            },
+            "RestaurantResponse": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "document_id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "iceCreamParlor",
+                            "restaurant",
+                            "snackBar"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                }
+            },
+            "BusinessHourPayload": {
+                "type": "object",
+                "properties": {
+                    "restaurant_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "weekDay": {
+                        "type": "string",
+                        "enum": [
+                            "mon",
+                            "tue",
+                            "wed",
+                            "thu",
+                            "fri",
+                            "sat",
+                            "sun"
+                        ]
+                    },
+                    "businessHours": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BusinessHourItem"
+                        }
+                    }
+                }
+            },
+            "BusinessHourResponse": {
+                "type": "object",
+                "properties": {
+                    "restaurant_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                }
+            },
+            "BusinessHourItem": {
+                "type": "object",
+                "properties": {
+                    "startTime": {
+                        "type": "string"
+                    },
+                    "endTime": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}
