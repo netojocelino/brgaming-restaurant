@@ -6,6 +6,8 @@ import { v4 as uuid_v4  } from 'uuid'
 
 import NotFoundException from './errors/NotFoundException'
 
+import { weekdays, supported_types } from './constants'
+
 import docs from '../docs/swagger.json'
 
 const app = express()
@@ -16,15 +18,11 @@ app.use('/docs', swagger.serve, swagger.setup(docs))
 
 app.get('/', (_request: Request, response: Response) => response.json({ message: 'Hello World' }))
 
-const weekdays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat" ]
 const RestaurantsDB: any[] = []
 const BusinesshourDB: any = {}
 
 app.post('/v1/restaurant', (request: Request, response: Response) => {
     const error = []
-    const supported_types = [
-        'iceCreamParlor', 'restaurant', 'snackBar'
-    ]
 
     try {
         const data = request.body
