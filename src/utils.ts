@@ -17,3 +17,9 @@ export const isFilledString = (data: any): data is string =>
 export const arrayToNumber = (data: any[]) => data.map((item) => +item)
 
 export const splitStrToNum = (data: string, separator = '') => arrayToNumber(data.split(separator))
+
+const regTest = (pattern: any, data: any) => (new RegExp(pattern)).test(data)
+
+export const isDateFormat = (data: string) => regTest(/[0-9]{4}-[0-9]{2}-[0-9]{2}/, data)
+
+export const isTimeFormat = (data: string) => regTest(/[0-9]{2}:[0-9]{2}/, data)

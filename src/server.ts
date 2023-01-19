@@ -7,7 +7,7 @@ import { v4 as uuid_v4  } from 'uuid'
 import NotFoundException from './errors/NotFoundException'
 
 import { weekdays, supported_types } from './constants'
-import { buildDate, isFilledString, splitStrToNum } from './utils'
+import { buildDate, isDateFormat, isFilledString, isTimeFormat, splitStrToNum } from './utils'
 
 import docs from '../docs/swagger.json'
 
@@ -79,13 +79,13 @@ app.get('/v1/restaurant/:restaurant_id/isOpen', (request: Request, response: Res
 
         if (
                 !isFilledString(request.query.date) ||
-                !(new RegExp(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)).test(request.query.date)
+                !isDateFormat(request.query.date)
         ) {
             throw new Error('INVALID_DATE')
         }
         if (
                 !isFilledString(request.query.time) ||
-                !(new RegExp(/[0-9]{2}:[0-9]{2}/)).test(request.query.time)
+                !isTimeFormat(request.query.time)
         ) {
             throw new Error('INVALID_TIME')
         }
@@ -116,9 +116,14 @@ app.get('/v1/restaurant/:restaurant_id/isOpen', (request: Request, response: Res
             .status(200)
             .send(finds)
     } catch (er) {
+        if (er instanceof NotFoundException) {
+            return response
+                .status(404)
+                .send(false)
+        }
         return response
             .status(400)
-            .send(false)
+            .send(er)
     }
 })
 
