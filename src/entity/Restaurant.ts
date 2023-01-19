@@ -1,13 +1,23 @@
+import { ShortWeekDayName, WorkHour } from "./BusinessHour"
+
 export type RestaurantTypes = 'SnackBar' | 'IceCreamParlor'
 
 const restaurantTypes = ['SnackBar', 'IceCreamParlor']
 const isRestaurantType = (input: string): input is RestaurantTypes => restaurantTypes.includes(input)
+
+
+type BusinessRepository = {
+    day: ShortWeekDayName,
+    hours: WorkHour[]
+}
 
 export interface RestaurantProps {
     name: string,
     document_id: string,
     type: RestaurantTypes
     // etc...
+    businessHours: BusinessRepository[]
+
 }
 
 export  default class Restaurant {
@@ -42,7 +52,22 @@ export  default class Restaurant {
             name: input.name,
             type: input.type,
             document_id: input.document_id,
+            businessHours: [
+                { day: 'mon', hours: [] },
+                { day: 'tue', hours: [] },
+                { day: 'wed', hours: [] },
+                { day: 'thu', hours: [] },
+                { day: 'fri', hours: [] },
+                { day: 'sat', hours: [] },
+                { day: 'sun', hours: [] },
+            ],
         }
+    }
+
+    addBusinessHour(input: { day: ShortWeekDayName, businessHour: WorkHour }) {
+        const index = this.props.businessHours.findIndex(({ day }: { day: string }) => day === input.day)
+
+        this.props.businessHours[index].hours.push(input.businessHour)
     }
 
     get name () {
@@ -55,5 +80,9 @@ export  default class Restaurant {
 
     get type () {
         return this.props.type
+    }
+
+    get businessHours () {
+        return this.props.businessHours
     }
 }

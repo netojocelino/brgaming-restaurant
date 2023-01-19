@@ -1,6 +1,7 @@
 import { expect, test } from "vitest"
 
 import Restaurant from '../src/entity/Restaurant'
+import { WorkHour } from '../src/entity/BusinessHour'
 
 test('Should create a new restaurant successfully', () => {
     const restaurant = {
@@ -18,6 +19,36 @@ test('Should create a new restaurant successfully', () => {
     expect(restaurant.name).toEqual(sut.name)
     expect(restaurant.document_id).toEqual(sut.documentId)
     expect(restaurant.type).toEqual(sut.type)
+})
+
+test('Should create a new restaurant with business hours successfully', () => {
+    const restaurant = {
+        name: 'Papa\'s Snack',
+        document_id: '1234778-88',
+        type: 'SnackBar',
+    }
+
+    const day = 'mon'
+    const businessHour: WorkHour = [
+        '10:00',
+        '11:00'
+    ]
+
+    const sut = new Restaurant(restaurant)
+    sut.addBusinessHour({
+        day,
+        businessHour
+    })
+
+    const indexBusiness = sut.businessHours.findIndex((input: { day: string }) =>
+        day === input.day
+    )
+
+
+    expect(sut).toBeInstanceOf(Restaurant)
+    expect(sut.name).toEqual(restaurant.name)
+    expect(sut.businessHours[indexBusiness].hours).contain(businessHour)
+    expect(sut.type).toEqual(restaurant.type)
 })
 
 test('Must fails at create a new restaurant when name is empty', () => {
