@@ -4,6 +4,8 @@ import express, { Request, Response } from 'express'
 import swagger from 'swagger-ui-express'
 import { v4 as uuid_v4  } from 'uuid'
 
+import NotFoundException from './errors/NotFoundException'
+
 import docs from '../docs/swagger.json'
 
 const app = express()
@@ -15,6 +17,7 @@ app.use('/docs', swagger.serve, swagger.setup(docs))
 app.get('/', (_request: Request, response: Response) => response.json({ message: 'Hello World' }))
 
 const RestaurantsDB: any[] = []
+const BusinesshourDB: any = {}
 
 app.post('/v1/restaurant', (request: Request, response: Response) => {
     const error = []
@@ -58,6 +61,71 @@ app.post('/v1/restaurant', (request: Request, response: Response) => {
         return response
             .status(400)
             .json({ error })
+    }
+})
+
+app.post('/v1/businesshour/:restaurant_id', (request: Request, response: Response) => {
+    const error = []
+
+    try {
+        const restaurant_id: string = request.params.restaurant_id
+        const data = request.body
+        const restaurantIndex = RestaurantsDB.findIndex(
+            (res) => res.id === restaurant_id)
+
+        if (restaurantIndex == -1) {
+            throw new NotFoundException(`Restaurant with id ${restaurant_id} not found`)
+        }
+
+
+        const weekdays = [ "mon", "tue", "wed", "thu", "fri", "sat", "sun" ]
+
+        if (data.weekDay === undefined || !weekdays.includes(data.weekDay)) {
+            error.push('INVALID_TIME')
+        }
+
+        if (
+                data.businessHours === undefined ||
+                !Array.isArray(data.businessHours) ||
+                data.businessHours.length < 1 ||
+                data.businessHours.filter( (bh: any) => !Array.isArray(bh) || bh.length !== 2 ).length > 0
+        ) {
+            error.push('INVALID_TIME')
+        }
+
+        if (BusinesshourDB[restaurant_id] === undefined) {
+            BusinesshourDB[restaurant_id] = {}
+        }
+        if (BusinesshourDB[restaurant_id][data.weekDay] === undefined) {
+            BusinesshourDB[restaurant_id][data.weekDay] = []
+        }
+
+        BusinesshourDB[restaurant_id][data.weekDay] = data.businessHours
+
+        const output = {
+            restaurant_id,
+            weekDay: data.weekDay,
+            businessHours: data.businessHours
+          }
+
+        return response
+            .status(201)
+            .json({output, BusinesshourDB})
+
+    } catch (e) {
+        console.error(error)
+
+        if (e instanceof NotFoundException) {
+            return response
+                .status(404)
+                .json({ error: e.message })
+        }
+
+
+        return response
+            .status(400)
+            .json({ error })
+
     }
 })
 
