@@ -70,6 +70,13 @@ export  default class Restaurant {
         this.props.businessHours[index].hours.push(input.businessHour)
     }
 
+    isOpenAt(day: string) {
+        const hoursFromDay = this.props.businessHours
+            .find((input: { day: string }) => input.day === day)
+
+        return (hoursFromDay !== undefined) && hoursFromDay.hours.length > 0
+    }
+
     get name () {
         return this.props.name
     }
