@@ -150,8 +150,12 @@
                                 "businessHour": {
                                     "value": {
                                         "weekDay": "mon",
-                                        "startTime": "10:00",
-                                        "endTime": "15:30"
+                                        "businessHours": [
+                                            {
+                                                "startTime": "10:00",
+                                                "endTime": "15:30"
+                                            }
+                                        ]
                                     }
                                 }
                             }
