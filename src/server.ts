@@ -14,8 +14,10 @@ app.use('/docs', swagger.serve, swagger.setup(docs))
 
 app.get('/', (_request: Request, response: Response) => response.json({ message: 'Hello World' }))
 
+const RestaurantsDB: any[] = []
+
 app.post('/v1/restaurant', (request: Request, response: Response) => {
-    const errors = []
+    const error = []
     const supported_types = [
         'iceCreamParlor', 'restaurant', 'snackBar'
     ]
@@ -24,15 +26,15 @@ app.post('/v1/restaurant', (request: Request, response: Response) => {
         const data = request.body
 
         if (data.name === undefined || data.name.length < 1 ) {
-            errors.push('NAME_REQUIRED')
+            error.push('NAME_REQUIRED')
         }
         if (data.document_id === undefined || data.document_id.length < 1 ) {
-            errors.push('DOCUMENT_ID_REQUIRED')
+            error.push('DOCUMENT_ID_REQUIRED')
         }
         if (data.type === undefined || data.type.length < 1 || !supported_types.includes(data.type) ) {
-            errors.push('TYPE_REQUIRED')
+            error.push('TYPE_REQUIRED')
         }
-        if (errors.length > 0) {
+        if (error.length > 0) {
             throw new Error('Invalid input')
         }
 
@@ -47,14 +49,15 @@ app.post('/v1/restaurant', (request: Request, response: Response) => {
             created_at: new Date(),
         }
 
+        RestaurantsDB.push(Restaurant)
         return response
             .status(201)
             .json(Restaurant)
-    } catch (error) {
-        console.error(error)
+    } catch (e) {
+        console.error(e)
         return response
             .status(400)
-            .json({ errors })
+            .json({ error })
     }
 })
 
