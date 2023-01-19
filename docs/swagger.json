@@ -149,7 +149,6 @@
                             "examples": {
                                 "businessHour": {
                                     "value": {
-                                        "restaurant_id": "123e4567-e89b-12d3-a456-426614174000",
                                         "weekDay": "mon",
                                         "startTime": "10:00",
                                         "endTime": "15:30"
@@ -266,10 +265,6 @@
             "BusinessHourPayload": {
                 "type": "object",
                 "properties": {
-                    "restaurant_id": {
-                        "type": "string",
-                        "format": "uuid"
-                    },
                     "weekDay": {
                         "type": "string",
                         "enum": [
