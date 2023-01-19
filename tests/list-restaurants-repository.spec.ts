@@ -75,3 +75,22 @@ test('Should returns `true` when restaurant is open', async () => {
     expect(sut).instanceOf(Array)
     expect(sut[0].isOpenAt('mon')).toBeTruthy()
 })
+
+
+test('Should returns `falsy` when restaurant is open', async () => {
+    const repository = new RestaurantRepository()
+    const restaurant = {
+        name: 'Papa\'s Snacks',
+        document_id: '1234778-88',
+        type: 'SnackBar',
+    }
+
+    repository.items.push(new Restaurant(restaurant))
+    repository.items[0].addBusinessHour({ day: 'mon', businessHour: [ '12:00', '22:00' ] })
+
+    const sut = await repository.listAll()
+
+    expect(sut.length).toBe(1)
+    expect(sut).instanceOf(Array)
+    expect(sut[0].isOpenAt('sun')).toBeFalsy()
+})
