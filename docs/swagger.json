@@ -210,7 +210,28 @@
                                 }
                             }
                         }
-                    }
+                    },
+                    "404": {
+                        "description": "Not found, restaurant_id unavaliable.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "restaurant": {
+                                        "value": {
+                                            "error": "Restaurant with id {id} not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }}
                 }
             }
         }
