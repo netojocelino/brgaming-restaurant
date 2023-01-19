@@ -7,7 +7,7 @@ import { v4 as uuid_v4  } from 'uuid'
 import NotFoundException from './errors/NotFoundException'
 
 import { weekdays, supported_types } from './constants'
-import { buildDate } from './utils/build-date'
+import { buildDate, isFilledString, splitStrToNum } from './utils'
 
 import docs from '../docs/swagger.json'
 
@@ -28,13 +28,13 @@ app.post('/v1/restaurant', (request: Request, response: Response) => {
     try {
         const data = request.body
 
-        if (data.name === undefined || data.name.length < 1 ) {
+        if (!isFilledString(data.name)) {
             error.push('NAME_REQUIRED')
         }
-        if (data.document_id === undefined || data.document_id.length < 1 ) {
+        if (!isFilledString(data.document_id) ) {
             error.push('DOCUMENT_ID_REQUIRED')
         }
-        if (data.type === undefined || data.type.length < 1 || !supported_types.includes(data.type) ) {
+        if (!isFilledString(data.type) || !supported_types.includes(data.type) ) {
             error.push('TYPE_REQUIRED')
         }
         if (error.length > 0) {
@@ -78,15 +78,13 @@ app.get('/v1/restaurant/:restaurant_id/isOpen', (request: Request, response: Res
         }
 
         if (
-                request.query.date === undefined ||
-                typeof request.query.date !== 'string' ||
+                !isFilledString(request.query.date) ||
                 !(new RegExp(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)).test(request.query.date)
         ) {
             throw new Error('INVALID_DATE')
         }
         if (
-                request.query.time === undefined ||
-                typeof request.query.time !== 'string' ||
+                !isFilledString(request.query.time) ||
                 !(new RegExp(/[0-9]{2}:[0-9]{2}/)).test(request.query.time)
         ) {
             throw new Error('INVALID_TIME')
@@ -103,8 +101,8 @@ app.get('/v1/restaurant/:restaurant_id/isOpen', (request: Request, response: Res
         if (hours !== undefined) {
             finds = hours
                 .filter((hr: any) => {
-                    const tA = hr.startTime.split(':').map((v: any) => +v)
-                    const tB = hr.endTime.split(':').map((v: any) => +v)
+                    const tA = splitStrToNum(hr.startTime,':')
+                    const tB = splitStrToNum(hr.endTime, ':')
                     const startTime = buildDate(date, tA, 0)
                     const endTime = buildDate(date, tB, 59)
 
