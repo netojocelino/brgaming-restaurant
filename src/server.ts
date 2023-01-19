@@ -16,6 +16,7 @@ app.use('/docs', swagger.serve, swagger.setup(docs))
 
 app.get('/', (_request: Request, response: Response) => response.json({ message: 'Hello World' }))
 
+const weekdays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat" ]
 const RestaurantsDB: any[] = []
 const BusinesshourDB: any = {}
 
@@ -64,6 +65,75 @@ app.post('/v1/restaurant', (request: Request, response: Response) => {
     }
 })
 
+
+const buildDate = (date: number[], time: number[], seconds?: number) => {
+    const newDate = new Date()
+    newDate.setUTCFullYear(date[0], date[1] - 1, date[2])
+    newDate.setUTCHours(time[0], time[1], seconds)
+
+    return newDate
+}
+
+app.get('/v1/restaurant/:restaurant_id/isOpen', (request: Request, response: Response) => {
+
+    try {
+        let finds = false
+        const restaurant_id = request.params.restaurant_id
+
+        const restaurantIndex = RestaurantsDB.findIndex(
+            (res) => res.id === restaurant_id)
+
+        if (restaurantIndex == -1 || BusinesshourDB[restaurant_id] === undefined) {
+            throw new NotFoundException(`Restaurant with id ${restaurant_id} not found`)
+        }
+
+        if (
+                request.query.date === undefined ||
+                typeof request.query.date !== 'string' ||
+                !(new RegExp(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)).test(request.query.date)
+        ) {
+            throw new Error('INVALID_DATE')
+        }
+        if (
+                request.query.time === undefined ||
+                typeof request.query.time !== 'string' ||
+                !(new RegExp(/[0-9]{2}:[0-9]{2}/)).test(request.query.time)
+        ) {
+            throw new Error('INVALID_TIME')
+        }
+
+        const date = request.query.date.split('-').map((v) => +v)
+        const time = request.query.time.split(':').map((v) => +v)
+
+        const findDate = buildDate(date, time, 0)
+
+        const shortName = weekdays[findDate.getDay()]
+        const hours = BusinesshourDB[restaurant_id][shortName]
+
+        if (hours !== undefined) {
+            finds = hours
+                .filter((hr: any) => {
+                    const tA = hr.startTime.split(':').map((v: any) => +v)
+                    const tB = hr.endTime.split(':').map((v: any) => +v)
+                    const startTime = buildDate(date, tA, 0)
+                    const endTime = buildDate(date, tB, 59)
+
+                    return (+startTime) <= (+findDate)
+                            && (+endTime) >= (+findDate)
+                })
+                .length > 0
+        }
+
+        return response
+            .status(200)
+            .send(finds)
+    } catch (er) {
+        return response
+            .status(400)
+            .send(false)
+    }
+})
+
 app.post('/v1/businesshour/:restaurant_id', (request: Request, response: Response) => {
     const error = []
 
@@ -77,8 +147,6 @@ app.post('/v1/businesshour/:restaurant_id', (request: Request, response: Respons
             throw new NotFoundException(`Restaurant with id ${restaurant_id} not found`)
         }
 
-
-        const weekdays = [ "mon", "tue", "wed", "thu", "fri", "sat", "sun" ]
 
         if (data.weekDay === undefined || !weekdays.includes(data.weekDay)) {
             error.push('INVALID_TIME')
