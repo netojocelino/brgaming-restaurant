@@ -1,15 +1,14 @@
 {
-    "name": "brgaming-restaurant",
     "version": 2,
     "public": true,
     "build": {
-        "src": "api/src/server.js",
+        "src": "api/src/index.js",
         "use": "@vercel/node"
     },
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "api/src/server.js"
+            "dest": "api/src/index.js"
         }
     ]
 }
