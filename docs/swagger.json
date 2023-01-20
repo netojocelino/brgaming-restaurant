@@ -207,6 +207,7 @@
                                         "value": {
                                             "error": [
                                                 "RESTAURANT_NOT_FOUND",
+                                                "INVALID_WEEK_DAY",
                                                 "INVALID_TIME"
                                             ]
                                         }
