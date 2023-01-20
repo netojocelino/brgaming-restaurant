@@ -12,7 +12,7 @@
     },
     "servers": [
         {
-            "url": "brgaming-restaurant.vercel.app/v1",
+            "url": "https://brgaming-restaurant.vercel.app/v1",
             "description": "Production API"
         },
         {
