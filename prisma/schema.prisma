@@ -23,6 +23,7 @@ model Restaurant {
 
 model BusinessHour {
     id Int @id @default(autoincrement())
+    weekDay String
     startTime String
     endTime String
     restaurant_id String
