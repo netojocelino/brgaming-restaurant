@@ -25,7 +25,11 @@ const BusinesshourDB: any = {}
 
 
 app.get('/v1/restaurants', async (_req: Request, response: Response) => {
-    const restaurants = await prisma.restaurant.findMany()
+    const restaurants = await prisma.restaurant.findMany({
+        include: {
+            BusinessHours: true,
+        }
+    })
 
     return response
         .json(restaurants)
