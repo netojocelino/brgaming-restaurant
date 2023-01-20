@@ -18,10 +18,6 @@ app.use('/docs', swagger.serve, swagger.setup(docs))
 
 app.get('/', (_request: Request, response: Response) => response.json({ message: 'Hello World' }))
 
-const RestaurantsDB: any[] = []
-const BusinesshourDB: any = {}
-
-
 app.get('/v1/restaurants', async (_req: Request, response: Response) => {
     const restaurants = await prisma.restaurant.findMany({
         include: {
