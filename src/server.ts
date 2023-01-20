@@ -76,16 +76,19 @@ app.post('/v1/restaurant', async (request: Request, response: Response) => {
     }
 })
 
-app.get('/v1/restaurant/:restaurant_id/isOpen', (request: Request, response: Response) => {
+app.get('/v1/restaurant/:restaurant_id/isOpen', async (request: Request, response: Response) => {
 
     try {
         let finds = false
         const restaurant_id = request.params.restaurant_id
 
-        const restaurantIndex = RestaurantsDB.findIndex(
-            (res) => res.id === restaurant_id)
+        const restaurant = await prisma.restaurant.findFirst({
+            where: {
+                id: restaurant_id
+            }
+        })
 
-        if (restaurantIndex == -1 || BusinesshourDB[restaurant_id] === undefined) {
+        if (restaurant == null) {
             throw new NotFoundException(`Restaurant with id ${restaurant_id} not found`)
         }
 
@@ -102,15 +105,20 @@ app.get('/v1/restaurant/:restaurant_id/isOpen', (request: Request, response: Res
             throw new Error('INVALID_TIME')
         }
 
-        const date = request.query.date.split('-').map((v) => +v)
-        const time = request.query.time.split(':').map((v) => +v)
+        const date = splitStrToNum(request.query.date, '-')
+        const time = splitStrToNum(request.query.time, ':')
 
         const findDate = buildDate(date, time, 0)
 
         const shortName = weekdays[findDate.getDay()]
-        const hours = BusinesshourDB[restaurant_id][shortName]
+        const hours = await prisma.businessHour.findMany({
+            where: {
+                restaurant_id: restaurant_id,
+                weekDay: shortName,
+            }
+        })
 
-        if (hours !== undefined) {
+        if (hours !== null && hours.length > 0) {
             finds = hours
                 .filter((hr: any) => {
                     const tA = splitStrToNum(hr.startTime,':')
