@@ -4,7 +4,7 @@ import express, { Request, Response } from 'express'
 import swagger from 'swagger-ui-express'
 
 import CreateRestaurant from './routes/create-restaurant.router'
-import CheckIsOpen from './routes/check-restaurant-is-open'
+import CheckIsOpen from './routes/check-restaurant-is-open.router'
 import CreateBusinessHour from './routes/create-business-hours.router'
 
 import docs from '../docs/swagger.json'
