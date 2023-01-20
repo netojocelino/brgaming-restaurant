@@ -10,6 +10,7 @@ import { weekdays, supported_types } from './constants'
 import { buildDate, isDateFormat, isFilledString, isTimeFormat, splitStrToNum } from './utils'
 
 import docs from '../docs/swagger.json'
+import prisma from './prisma'
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -22,7 +23,15 @@ app.get('/', (_request: Request, response: Response) => response.json({ message:
 const RestaurantsDB: any[] = []
 const BusinesshourDB: any = {}
 
-app.post('/v1/restaurant', (request: Request, response: Response) => {
+
+app.get('/v1/restaurants', async (_req: Request, response: Response) => {
+    const restaurants = await prisma.restaurant.findMany()
+
+    return response
+        .json(restaurants)
+})
+
+app.post('/v1/restaurant', async (request: Request, response: Response) => {
     const error = []
 
     try {
@@ -49,13 +58,12 @@ app.post('/v1/restaurant', (request: Request, response: Response) => {
             name: request.body.name,
             document_id: request.body.document_id,
             type: request.body.type,
-            created_at: new Date(),
         }
+        const rest = await prisma.restaurant.create({ data: Restaurant })
 
-        RestaurantsDB.push(Restaurant)
         return response
             .status(201)
-            .json(Restaurant)
+            .json(rest)
     } catch (e) {
         console.error(e)
         return response
