@@ -1,4 +1,4 @@
-require('dotenv-safe').config()
+require('dotenv').config()
 
 import express, { Request, Response } from 'express'
 import swagger from 'swagger-ui-express'
