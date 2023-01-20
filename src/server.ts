@@ -1,6 +1,7 @@
-require('dotenv-safe').config()
+require('dotenv').config()
 
 import express, { Request, Response } from 'express'
+import cors from 'cors'
 import swagger from 'swagger-ui-express'
 
 import CreateRestaurant from './routes/create-restaurant.router'
@@ -11,8 +12,8 @@ import docs from '../docs/swagger.json'
 import prisma from './prisma'
 
 const app = express()
-const port = process.env.PORT || 3000
 
+app.use(cors())
 app.use(express.json())
 app.use('/docs', swagger.serve, swagger.setup(docs))
 
@@ -35,4 +36,5 @@ app.get('/v1/restaurant/:restaurant_id/isOpen', CheckIsOpen)
 
 app.post('/v1/businesshour/:restaurant_id', CreateBusinessHour)
 
-app.listen(port, () => console.log(`Listen port ${port}.`) );
+
+export default app

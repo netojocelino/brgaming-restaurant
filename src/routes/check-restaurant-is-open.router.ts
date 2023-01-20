@@ -12,6 +12,9 @@ import {
 import prisma from "../prisma";
 
 export default async function (request: Request, response: Response) {
+    type ErrorStatus = 'RESTAURANT_NOT_FOUND' | 'INVALID_DATE' | 'INVALID_TIME' | 'INVALID_WEEK_DAY'
+
+    const errors: ErrorStatus[] = []
     try {
         let finds = false;
         const restaurant_id = request.params.restaurant_id;
@@ -23,26 +26,29 @@ export default async function (request: Request, response: Response) {
         });
 
         if (restaurant == null) {
-            throw new NotFoundException(
-                `Restaurant with id ${restaurant_id} not found`
-            );
+            errors.push('RESTAURANT_NOT_FOUND')
         }
 
         if (
             !isFilledString(request.query.date) ||
             !isDateFormat(request.query.date)
         ) {
-            throw new Error("INVALID_DATE");
+            errors.push('INVALID_DATE');
         }
+
         if (
             !isFilledString(request.query.time) ||
             !isTimeFormat(request.query.time)
         ) {
-            throw new Error("INVALID_TIME");
+            errors.push('INVALID_TIME');
         }
 
-        const date = splitStrToNum(request.query.date, "-");
-        const time = splitStrToNum(request.query.time, ":");
+        if (errors.length > 0) {
+            throw new Error('Invalid input')
+        }
+
+        const date = splitStrToNum(request.query.date as string, "-");
+        const time = splitStrToNum(request.query.time as string, ":");
 
         const findDate = buildDate(date, time, 0);
 
@@ -71,6 +77,6 @@ export default async function (request: Request, response: Response) {
         if (er instanceof NotFoundException) {
             return response.status(404).send(false);
         }
-        return response.status(400).send(er);
+        return response.status(400).json(errors);
     }
 }
