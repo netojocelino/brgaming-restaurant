@@ -5,10 +5,10 @@ import swagger from 'swagger-ui-express'
 
 import NotFoundException from './errors/NotFoundException'
 
-import { weekdays, supported_types } from './constants'
-import { buildDate, isDateFormat, isFilledString, isTimeFormat, splitStrToNum } from './utils'
+import { weekdays } from './constants'
 
 import CreateRestaurant from './routes/create-restaurant.router'
+import CheckIsOpen from './routes/check-restaurant-is-open'
 
 import docs from '../docs/swagger.json'
 import prisma from './prisma'
@@ -38,76 +38,7 @@ app.get('/v1/restaurants', async (_req: Request, response: Response) => {
 
 app.post('/v1/restaurant', CreateRestaurant)
 
-app.get('/v1/restaurant/:restaurant_id/isOpen', async (request: Request, response: Response) => {
-
-    try {
-        let finds = false
-        const restaurant_id = request.params.restaurant_id
-
-        const restaurant = await prisma.restaurant.findFirst({
-            where: {
-                id: restaurant_id
-            }
-        })
-
-        if (restaurant == null) {
-            throw new NotFoundException(`Restaurant with id ${restaurant_id} not found`)
-        }
-
-        if (
-                !isFilledString(request.query.date) ||
-                !isDateFormat(request.query.date)
-        ) {
-            throw new Error('INVALID_DATE')
-        }
-        if (
-                !isFilledString(request.query.time) ||
-                !isTimeFormat(request.query.time)
-        ) {
-            throw new Error('INVALID_TIME')
-        }
-
-        const date = splitStrToNum(request.query.date, '-')
-        const time = splitStrToNum(request.query.time, ':')
-
-        const findDate = buildDate(date, time, 0)
-
-        const shortName = weekdays[findDate.getDay()]
-        const hours = await prisma.businessHour.findMany({
-            where: {
-                restaurant_id: restaurant_id,
-                weekDay: shortName,
-            }
-        })
-
-        if (hours !== null && hours.length > 0) {
-            finds = hours
-                .filter((hr: any) => {
-                    const tA = splitStrToNum(hr.startTime,':')
-                    const tB = splitStrToNum(hr.endTime, ':')
-                    const startTime = buildDate(date, tA, 0)
-                    const endTime = buildDate(date, tB, 59)
-
-                    return (+startTime) <= (+findDate)
-                            && (+endTime) >= (+findDate)
-                })
-                .length > 0
-        }
-
-        return response
-            .status(200)
-            .send(finds)
-    } catch (er) {
-        if (er instanceof NotFoundException) {
-            return response
-                .status(404)
-                .send(false)
-        }
-        return response
-            .status(400)
-            .send(er)
-    }
-})
+app.get('/v1/restaurant/:restaurant_id/isOpen', CheckIsOpen)
 
 app.post('/v1/businesshour/:restaurant_id', async (request: Request, response: Response) => {
     type ErrorStatus = 'RESTAURANT_NOT_FOUND' | 'INVALID_WEEK_DAY' | 'INVALID_TIME'
