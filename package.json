@@ -4,7 +4,7 @@
     "description": "Development test for the backend role.",
     "main": "src/index.ts",
     "scripts": {
-	"prepare": "npx prisma generate",
+	"prepare": "npm install && npx prisma generate",
 	"start": "nodemon src/index.ts",
         "test": "vitest",
         "dev": "nodemon src/index.ts",
