@@ -126,7 +126,19 @@
                         "description": "Time for request if the restaurant is opened. Formated as: 'hour:minute'",
                         "required": true
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Indicarw if the restaurant is openend",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/businesshour/{restaurant_id}": {
