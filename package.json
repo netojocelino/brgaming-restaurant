@@ -5,6 +5,7 @@
     "main": "src/index.ts",
     "scripts": {
 	"prepare": "npx prisma generate",
+	"start": "nodemon src/index.ts",
         "test": "vitest",
         "dev": "nodemon src/index.ts",
         "deploy:check": "tsc --project tsconfig.json",
